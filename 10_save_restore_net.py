@@ -63,20 +63,20 @@ with tf.Session() as sess:
 
     ckpt = tf.train.get_checkpoint_state(ckpt_dir)
     if ckpt and ckpt.model_checkpoint_path:
-        print(ckpt.model_checkpoint_path)
+        print((ckpt.model_checkpoint_path))
         saver.restore(sess, ckpt.model_checkpoint_path) # restore all variables
 
     start = global_step.eval() # get last global_step
-    print("Start from:", start)
+    print(("Start from:", start))
 
     for i in range(start, 100):
-        for start, end in zip(range(0, len(trX), 128), range(128, len(trX)+1, 128)):
+        for start, end in zip(list(range(0, len(trX), 128)), list(range(128, len(trX)+1, 128))):
             sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end],
                                           p_keep_input: 0.8, p_keep_hidden: 0.5})
 
         global_step.assign(i).eval() # set and update(eval) global_step with index, i
         saver.save(sess, ckpt_dir + "/model.ckpt", global_step=global_step)
-        print(i, np.mean(np.argmax(teY, axis=1) ==
+        print((i, np.mean(np.argmax(teY, axis=1) ==
                          sess.run(predict_op, feed_dict={X: teX, 
                                                          p_keep_input: 1.0,
-                                                         p_keep_hidden: 1.0})))
+                                                         p_keep_hidden: 1.0}))))

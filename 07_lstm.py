@@ -78,12 +78,12 @@ with tf.Session(config=session_conf) as sess:
     tf.global_variables_initializer().run()
 
     for i in range(100):
-        for start, end in zip(range(0, len(trX), batch_size), range(batch_size, len(trX)+1, batch_size)):
+        for start, end in zip(list(range(0, len(trX), batch_size)), list(range(batch_size, len(trX)+1, batch_size))):
             sess.run(train_op, feed_dict={X: trX[start:end], Y: trY[start:end]})
 
         test_indices = np.arange(len(teX))  # Get A Test Batch
         np.random.shuffle(test_indices)
         test_indices = test_indices[0:test_size]
 
-        print(i, np.mean(np.argmax(teY[test_indices], axis=1) ==
-                         sess.run(predict_op, feed_dict={X: teX[test_indices]})))
+        print((i, np.mean(np.argmax(teY[test_indices], axis=1) ==
+                         sess.run(predict_op, feed_dict={X: teX[test_indices]}))))

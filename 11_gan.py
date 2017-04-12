@@ -66,8 +66,8 @@ D_obj_fake = tf.reduce_mean(
         tf.nn.sigmoid_cross_entropy_with_logits(logits=dout_fake, labels=tf.zeros_like(dout_fake))) 
 D_obj = D_obj_real + D_obj_fake
 
-G_opt = tf.train.AdamOptimizer().minimize(G_obj, var_list=g_weights.values())
-D_opt = tf.train.AdamOptimizer().minimize(D_obj, var_list=d_weights.values())
+G_opt = tf.train.AdamOptimizer().minimize(G_obj, var_list=list(g_weights.values()))
+D_opt = tf.train.AdamOptimizer().minimize(D_obj, var_list=list(d_weights.values()))
 
 ## Training
 batch_size = 128
@@ -77,7 +77,7 @@ with tf.Session() as sess:
     
     for i in range(200):
         sess.run(D_opt, feed_dict={
-            X: images[np.random.choice(range(len(images)), batch_size)].reshape(batch_size, x_size),
+            X: images[np.random.choice(list(range(len(images))), batch_size)].reshape(batch_size, x_size),
             z: generate_z(batch_size),
         })
         # run two phases of generator
@@ -90,13 +90,13 @@ with tf.Session() as sess:
         
         g_cost = sess.run(G_obj, feed_dict={z: generate_z(batch_size)})
         d_cost = sess.run(D_obj, feed_dict={
-            X: images[np.random.choice(range(len(images)), batch_size)].reshape(batch_size, x_size),
+            X: images[np.random.choice(list(range(len(images))), batch_size)].reshape(batch_size, x_size),
             z: generate_z(batch_size),
         })
         image = sess.run(G(z), feed_dict={z:generate_z()})
         df = sess.run(tf.sigmoid(dout_fake), feed_dict={z:generate_z()})
         # print i, G cost, D cost, image max pixel, D output of fake
-        print (i, g_cost, d_cost, image.max(), df[0][0])
+        print((i, g_cost, d_cost, image.max(), df[0][0]))
 
     # You may wish to save or plot the image generated
     # to see how it looks like

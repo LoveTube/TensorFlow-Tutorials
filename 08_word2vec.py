@@ -30,7 +30,7 @@ sentences = ["the quick brown fox jumped over the lazy dog",
 # sentences to words and count
 words = " ".join(sentences).split()
 count = collections.Counter(words).most_common()
-print ("Word count", count[:5])
+print(("Word count", count[:5]))
 
 # Build dictionaries
 rdic = [i[0] for i in count] #reverse dic, idx -> word
@@ -39,14 +39,14 @@ voc_size = len(dic)
 
 # Make indexed word data
 data = [dic[word] for word in words]
-print('Sample data', data[:10], [rdic[t] for t in data[:10]])
+print(('Sample data', data[:10], [rdic[t] for t in data[:10]]))
 
 # Let's make a training data for window size 1 for simplicity
 # ([the, brown], quick), ([quick, fox], brown), ([brown, jumped], fox), ...
 cbow_pairs = [];
 for i in range(1, len(data)-1) :
     cbow_pairs.append([[data[i-1], data[i+1]], data[i]]);
-print('Context pairs', cbow_pairs[:10])
+print(('Context pairs', cbow_pairs[:10]))
 
 # Let's make skip-gram pairs
 # (quick, the), (quick, brown), (brown, quick), (brown, fox), ...
@@ -54,20 +54,20 @@ skip_gram_pairs = [];
 for c in cbow_pairs:
     skip_gram_pairs.append([c[1], c[0][0]])
     skip_gram_pairs.append([c[1], c[0][1]])
-print('skip-gram pairs', skip_gram_pairs[:5])
+print(('skip-gram pairs', skip_gram_pairs[:5]))
 
 def generate_batch(size):
     assert size < len(skip_gram_pairs)
     x_data=[]
     y_data = []
-    r = np.random.choice(range(len(skip_gram_pairs)), size, replace=False)
+    r = np.random.choice(list(range(len(skip_gram_pairs))), size, replace=False)
     for i in r:
         x_data.append(skip_gram_pairs[i][0])  # n dim
         y_data.append([skip_gram_pairs[i][1]])  # n, 1 dim
     return x_data, y_data
 
 # generate_batch test
-print ('Batches (x, y)', generate_batch(3))
+print(('Batches (x, y)', generate_batch(3)))
 
 # Input data
 train_inputs = tf.placeholder(tf.int32, shape=[batch_size])
@@ -104,7 +104,7 @@ with tf.Session() as sess:
         _, loss_val = sess.run([train_op, loss],
                 feed_dict={train_inputs: batch_inputs, train_labels: batch_labels})
         if step % 10 == 0:
-          print("Loss at ", step, loss_val) # Report the loss
+          print(("Loss at ", step, loss_val)) # Report the loss
 
     # Final embeddings are ready for you to use. Need to normalize for practical use
     trained_embeddings = embeddings.eval()

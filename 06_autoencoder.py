@@ -14,7 +14,7 @@ def vis(images, save_name):
     n_image_rows = int(np.ceil(np.sqrt(dim)))
     n_image_cols = int(np.ceil(dim * 1.0/n_image_rows))
     gs = gridspec.GridSpec(n_image_rows,n_image_cols,top=1., bottom=0., right=1., left=0., hspace=0., wspace=0.)
-    for g,count in zip(gs,range(int(dim))):
+    for g,count in zip(gs,list(range(int(dim)))):
         ax = plt.subplot(g)
         ax.imshow(images[count,:].reshape((28,28)))
         ax.set_xticks([])
@@ -69,13 +69,13 @@ with tf.Session() as sess:
     tf.global_variables_initializer().run()
 
     for i in range(100):
-        for start, end in zip(range(0, len(trX), 128), range(128, len(trX)+1, 128)):
+        for start, end in zip(list(range(0, len(trX), 128)), list(range(128, len(trX)+1, 128))):
             input_ = trX[start:end]
             mask_np = np.random.binomial(1, 1 - corruption_level, input_.shape)
             sess.run(train_op, feed_dict={X: input_, mask: mask_np})
 
         mask_np = np.random.binomial(1, 1 - corruption_level, teX.shape)
-        print(i, sess.run(cost, feed_dict={X: teX, mask: mask_np}))
+        print((i, sess.run(cost, feed_dict={X: teX, mask: mask_np})))
     # save the predictions for 100 images
     mask_np = np.random.binomial(1, 1 - corruption_level, teX[:100].shape)
     predicted_imgs = sess.run(predict_op, feed_dict={X: teX[:100], mask: mask_np})
